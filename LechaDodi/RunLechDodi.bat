@@ -1,0 +1,1 @@
+"C:\Program Files\Internet Explorer\Iexplore.exe" -k D:\time\LechaDodi\LechaDodiStart.html
