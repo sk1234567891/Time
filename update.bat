@@ -9,6 +9,14 @@ cd /D D:\time
 start EXCEL.EXE ex\time2.xlsm 
 timeout -t 40
 
+REM ####### AutoPic function ############
+REM ####### set CurSID = Current user SID
+for /f "usebackq" %%i in (`wmic useraccount where "name='%username%'" get sid ^| findstr "S-"`) do (set CurSID=%%i)
+REM ####### set SpotVer = Spotlight version
+for /f "usebackq" %%j in (`reg query HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\Creative\!CurSID!\ ^| findstr "131"`) do (set SpotVer=%%j)
+REM ####### find the spotlight current background
+FOR /F "usebackq tokens=3*" %%A IN (`reg query !SpotVer! /v landscapeImage`) DO ( set BackDir=%%A )
+copy !BackDir! d:\time\pp\hol\AutoPic.jpg
 
 :PP
 tasklist /FI "IMAGENAME eq POWERPNT.EXE" 2>NUL | find /I /N "POWERPNT.EXE">NUL
