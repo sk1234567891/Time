@@ -50,16 +50,25 @@ Function Auto_Omer {
     else {$pp.ActivePresentation.Slides(4).SlideShowTransition.Hidden = $true}
 }
 
+# update zal excel
+
+
+
 #open excel
 $TimePath = "D:\Time"
-$EXfile = "$TimePath\ex\time2.xlsm"
 $x1 = New-Object -ComObject "Excel.Application"
 $x1.Visible = $true
+
+
+$ZalFile = "$TimePath\ex\Zal.xlsx"
+$ZalWB = $x1.workbooks.Open($ZalFile)
+
+$EXfile = "$TimePath\ex\time2.xlsm"
 $wb = $x1.workbooks.Open($EXfile)
 #update internet links
 if (Test-Connection -ComputerName 8.8.8.8) {
     $wb.refreshall()
-    Start-Sleep -Seconds 30
+    Start-Sleep -Seconds 5
 }
 $ws = $wb.Sheets.Item(5)
 
@@ -78,7 +87,10 @@ if (($ws.Cells.Item(4 , 9).text) -ne "0") {
 
 #open powerpoint
 $ppFile = "$TimePath\pp\$DayTime"
-if ((Get-Process -Name POWERPNT -ErrorAction SilentlyContinue) -eq $null) {
+#if ((Get-Process -Name POWERPNT -ErrorAction SilentlyContinue) -eq $null) {
+if (Get-Variable -Name pp -ErrorAction SilentlyContinue) { 
+    echo pp already defined
+} else {
     $pp = New-Object -ComObject "powerpoint.application"
 }
 
@@ -108,4 +120,8 @@ $prp.SlideShowSettings.Run()
 
 $wb.Save()
 $wb.Close()
+$ZalWB.Save()
+$ZalWB.Close()
+
+
 $x1.Quit()
