@@ -87,16 +87,12 @@ if (($ws.Cells.Item(4 , 9).text) -ne "0") {
 
 #open powerpoint
 $ppFile = "$TimePath\pp\$DayTime"
-#if ((Get-Process -Name POWERPNT -ErrorAction SilentlyContinue) -eq $null) {
-if (Get-Variable -Name pp -ErrorAction SilentlyContinue) { 
-    echo pp already defined
-} else {
-    $pp = New-Object -ComObject "powerpoint.application"
-}
+
+$pp = New-Object -ComObject "powerpoint.application"
 
 #closing current presentation
-$pp.ActivePresentation.Save()
-$pp.ActivePresentation.Close()
+# $pp.ActivePresentation.Save()
+# $pp.ActivePresentation.Close()
 
 #opening the new presentation
 $prp = $pp.Presentations.Open($ppFile)
@@ -114,9 +110,13 @@ if (($ws.Cells.Item(4 , 9).text) -eq "0") {
     Auto_Omer
 }
 
-$prp.Save()
-(New-Object -ComObject WScript.Shell).AppActivate((get-process powerpnt).MainWindowTitle)
-$prp.SlideShowSettings.Run()
+# $prp.Save()
+$pp.ActivePresentation.Save()
+$pp.ActivePresentation.Close()
+$pp.Quit()
+Stop-Process -Name POWERPNT
+
+Start-Process powerpnt -ArgumentList ("/s " + "$ppFile")
 
 $wb.Save()
 $wb.Close()
