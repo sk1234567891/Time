@@ -97,6 +97,9 @@ $pp = New-Object -ComObject "powerpoint.application"
 #opening the new presentation
 $prp = $pp.Presentations.Open($ppFile)
 $prp.UpdateLinks()
+$prp.UpdateLinks()
+
+Start-Sleep -Seconds 5
 
 #set the background for hol.pptm
 if ($DayTime -eq "hol.pptm") {
