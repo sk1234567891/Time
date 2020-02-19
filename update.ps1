@@ -1,7 +1,6 @@
 ﻿Function Auto_Image {
     $out = "D:\test"
     $images="$env:USERPROFILE\AppData\Local\Packages\Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy\LocalState\Assets"
-    $DstPic = "D:\Time\AutoPic.jpg"
 
     New-Item -ItemType Directory -Path $out -Force
 
@@ -42,7 +41,7 @@
         }
     }
     Get-ChildItem -Path $out | Sort-Object LastAccessTime -Descending | Select-Object -First 1 | Copy-Item -Destination $DstPic
-    Remove-Item -Path $out -Confirm $true
+    Remove-Item -Path $out -Confirm:$false -Recurse
 }
 
 Function Auto_Omer {
@@ -50,6 +49,7 @@ Function Auto_Omer {
     else {$pp.ActivePresentation.Slides(4).SlideShowTransition.Hidden = $true}
 }
 
+$DstPic = "D:\Time\AutoPic.jpg"
 # update zal excel
 
 
@@ -66,11 +66,11 @@ $ZalWB = $x1.workbooks.Open($ZalFile)
 $EXfile = "$TimePath\ex\time2.xlsm"
 $wb = $x1.workbooks.Open($EXfile)
 #update internet links
-if (Test-Connection -ComputerName 8.8.8.8) {
+if (Test-Connection -ComputerName 8.8.8.8 -Quiet) {
     $wb.refreshall()
     Start-Sleep -Seconds 5
 }
-$ws = $wb.Sheets.Item(5)
+do {$ws = $wb.Sheets.Item(5)} until ($ws)
 
 #check if its holiday today by checking the I4 cell in excel
 if (($ws.Cells.Item(4 , 9).text) -ne "0") {
@@ -86,6 +86,8 @@ if (($ws.Cells.Item(4 , 9).text) -ne "0") {
 
 
 #open powerpoint
+Stop-Process -Name POWERPNT -ErrorAction SilentlyContinue
+
 $ppFile = "$TimePath\pp\$DayTime"
 
 $pp = New-Object -ComObject "powerpoint.application"
@@ -97,10 +99,9 @@ $pp = New-Object -ComObject "powerpoint.application"
 #opening the new presentation
 $prp = $pp.Presentations.Open($ppFile)
 $prp.UpdateLinks()
-$prp.UpdateLinks()
-
 Start-Sleep -Seconds 5
-
+$prp.UpdateLinks()
+Start-Sleep -Seconds 5
 #set the background for hol.pptm
 if ($DayTime -eq "hol.pptm") {
     $osld = $pp.ActivePresentation.Slides(1)
@@ -116,6 +117,7 @@ if (($ws.Cells.Item(4 , 9).text) -eq "0") {
 # $prp.Save()
 $pp.ActivePresentation.Save()
 $pp.ActivePresentation.Close()
+Start-Sleep -Seconds 3
 $pp.Quit()
 Stop-Process -Name POWERPNT
 
