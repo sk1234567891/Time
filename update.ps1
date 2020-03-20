@@ -49,21 +49,23 @@ Function Auto_Omer {
     else {$pp.ActivePresentation.Slides(4).SlideShowTransition.Hidden = $true}
 }
 
-$DstPic = "D:\Time\AutoPic.jpg"
+$TimePath = "$PSScriptRoot"
+$DstPic = "$TimePath\AutoPic.jpg"
+$ZalFile = "$TimePath\ex\Zal.xlsm"
+$EXfile = "$TimePath\ex\time2.xlsm"
+$LechaDodiPP = "$TimePath\pp\LechaDodi.pptx"
 # update zal excel
 
 
 
 #open excel
-$TimePath = "D:\Time"
+
 $x1 = New-Object -ComObject "Excel.Application"
 $x1.Visible = $true
 
-
-$ZalFile = "$TimePath\ex\Zal.xlsx"
 $ZalWB = $x1.workbooks.Open($ZalFile)
 
-$EXfile = "$TimePath\ex\time2.xlsm"
+
 $wb = $x1.workbooks.Open($EXfile)
 #update internet links
 if (Test-Connection -ComputerName 8.8.8.8 -Quiet) {
@@ -84,7 +86,17 @@ if (($ws.Cells.Item(4 , 9).text) -ne "0") {
     Auto_Image
 }
 
-
+if ((Get-Date).DayOfWeek -eq "Friday") {
+    #Lecha Dodi show
+    $timesheet = $wb.Sheets.Item(3)
+    $ShabatEnter = $timesheet.Cells.Item(1 , 2).text
+    
+    Unregister-ScheduledTask -TaskName "Lecha Dodi show" -Confirm:$false
+    $Trigger = New-ScheduledTaskTrigger -Once -At $ShabatEnter
+    $Action = New-ScheduledTaskAction -Execute "powerpnt" -Argument ("/s " + "$LechaDodiPP") -
+    $Settings = New-ScheduledTaskSettingsSet -ExecutionTimeLimit 00:40
+    Register-ScheduledTask -Action $Action -Trigger $Trigger -Settings $Settings -TaskName "Lecha Dodi show"
+}
 #open powerpoint
 Stop-Process -Name POWERPNT -ErrorAction SilentlyContinue
 
