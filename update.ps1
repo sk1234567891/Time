@@ -93,7 +93,7 @@ if ((Get-Date).DayOfWeek -eq "Friday") {
     
     Unregister-ScheduledTask -TaskName "Lecha Dodi show" -Confirm:$false
     $Trigger = New-ScheduledTaskTrigger -Once -At $ShabatEnter
-    $Action = New-ScheduledTaskAction -Execute "powerpnt" -Argument ("/s " + "$LechaDodiPP") -
+    $Action = New-ScheduledTaskAction -Execute "C:\Program Files (x86)\Microsoft Office\root\Office16\POWERPNT.EXE" -Argument ("/s " + "$LechaDodiPP")
     $Settings = New-ScheduledTaskSettingsSet -ExecutionTimeLimit 00:40
     Register-ScheduledTask -Action $Action -Trigger $Trigger -Settings $Settings -TaskName "Lecha Dodi show"
 }
