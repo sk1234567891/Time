@@ -89,13 +89,20 @@ if (($ws.Cells.Item(4 , 9).text) -ne "0") {
 if ((Get-Date).DayOfWeek -eq "Friday") {
     #Lecha Dodi show
     $timesheet = $wb.Sheets.Item(3)
-    $ShabatEnter = $timesheet.Cells.Item(1 , 2).text
-    
+    [datetime]$ShabatEnter = ($timesheet.Cells.Item(1 , 2).text)
+    [datetime]$LechaDodiTime = $ShabatEnter.AddMinutes(15)
     Unregister-ScheduledTask -TaskName "Lecha Dodi show" -Confirm:$false
-    $Trigger = New-ScheduledTaskTrigger -Once -At $ShabatEnter
-    $Action = New-ScheduledTaskAction -Execute "C:\Program Files (x86)\Microsoft Office\root\Office16\POWERPNT.EXE" -Argument ("/s " + "$LechaDodiPP")
+    $Trigger = New-ScheduledTaskTrigger -Once -At $LechaDodiTime
+    $Action = New-ScheduledTaskAction -Execute "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -Argument ("$PSScriptRoot\LechaDodiOpen.ps1")
     $Settings = New-ScheduledTaskSettingsSet -ExecutionTimeLimit 00:40
     Register-ScheduledTask -Action $Action -Trigger $Trigger -Settings $Settings -TaskName "Lecha Dodi show"
+
+    Unregister-ScheduledTask -TaskName "BackToNormal" -Confirm:$false
+    [datetime]$BackToNormalTime = $ShabatEnter.AddMinutes(40)
+    $BackToNormalTrigger = New-ScheduledTaskTrigger -Once -At $BackToNormalTime
+    $BackToNormalAction = New-ScheduledTaskAction -Execute "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -Argument ("$PSScriptRoot\update.ps1")
+    $BackToNormalSettings = New-ScheduledTaskSettingsSet -ExecutionTimeLimit 00:40
+    Register-ScheduledTask -Action $BackToNormalAction -Trigger $BackToNormalTrigger -Settings $BackToNormalSettings -TaskName "BackToNormal"
 }
 #open powerpoint
 Stop-Process -Name POWERPNT -ErrorAction SilentlyContinue
