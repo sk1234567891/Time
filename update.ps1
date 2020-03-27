@@ -53,7 +53,7 @@ $TimePath = "$PSScriptRoot"
 $DstPic = "$TimePath\AutoPic.jpg"
 $ZalFile = "$TimePath\ex\Zal.xlsm"
 $EXfile = "$TimePath\ex\time2.xlsm"
-$LechaDodiPP = "$TimePath\pp\LechaDodi.pptx"
+# $LechaDodiPP = "$TimePath\pp\LechaDodi.pptx"
 # update zal excel
 
 
