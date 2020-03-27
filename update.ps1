@@ -109,7 +109,7 @@ Stop-Process -Name POWERPNT -ErrorAction SilentlyContinue
 
 $ppFile = "$TimePath\pp\$DayTime"
 
-$pp = New-Object -ComObject "powerpoint.application"
+do {$pp = New-Object -ComObject "powerpoint.application"} until ($pp)
 
 #closing current presentation
 # $pp.ActivePresentation.Save()
